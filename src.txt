@@ -1,0 +1,51 @@
+class Solution {
+    public int snakesAndLadders(int[][] board) {
+        int n = board.length;
+        int[] arr = new int[n * n + 1]; // 1-indexed
+        
+        // Flatten board into 1D array
+        int idx = 1;
+        boolean leftToRight = true;
+        for (int i = n - 1; i >= 0; i--) {
+            if (leftToRight) {
+                for (int j = 0; j < n; j++) {
+                    arr[idx++] = board[i][j];
+                }
+            } else {
+                for (int j = n - 1; j >= 0; j--) {
+                    arr[idx++] = board[i][j];
+                }
+            }
+            leftToRight = !leftToRight;
+        }
+        
+        // BFS
+        Queue<Integer> q = new LinkedList<>();
+        boolean[] visited = new boolean[n * n + 1];
+        q.add(1);
+        visited[1] = true;
+        int moves = 0;
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int s = 0; s < size; s++) {
+                int cur = q.poll();
+                if (cur == n * n) return moves; // reached end
+                
+                for (int dice = 1; dice <= 6 && cur + dice <= n * n; dice++) {
+                    int next = cur + dice;
+                    if (arr[next] != -1) {
+                        next = arr[next]; // ladder or snake
+                    }
+                    if (!visited[next]) {
+                        visited[next] = true;
+                        q.add(next);
+                    }
+                }
+            }
+            moves++;
+        }
+        
+        return -1; // not reachable
+    }
+}
